@@ -65,7 +65,7 @@
 
         async function carregarReservas() {
             try {
-                const response = await fetch("http://localhost:8080/reservas");
+                const response = await fetch("https://reserva-salas-production.up.railway.app/reservas");
                 const reservas = await response.json();
                 const tabela = document.getElementById("tabela-reservas");
                 tabela.innerHTML = ""; // Limpa a tabela antes de adicionar os novos dados
@@ -102,7 +102,7 @@
             validarSenha(async () => {
                 if (confirm("Tem certeza que deseja excluir esta reserva?")) {
                     try {
-                        const response = await fetch(`http://localhost:8080/reservas`, {
+                        const response = await fetch(`https://reserva-salas-production.up.railway.app/reservas`, {
                             method: "DELETE",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ id })
@@ -146,7 +146,7 @@
             const reservaEditada = { id, usuario, geracao, sala, data, periodo };
 
             try {
-                const response = await fetch("http://localhost:8080/reservas", {
+                const response = await fetch("https://reserva-salas-production.up.railway.app/reservas", {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(reservaEditada)
