@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Salas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        select, input, button {
+            padding: 8px;
+            font-size: 16px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            margin-right: 5px;
+        }
+        button:last-child {
+            margin-right: 0;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function definirDataMinima() {
+            const hoje = new Date().toISOString().split("T")[0];
+            document.getElementById("data").setAttribute("min", hoje);
+        }
+
+        async function reservarSala() {
+            const usuario = document.getElementById("usuario").value;
+            const geracao = document.getElementById("geracao").value;
+            const sala = document.getElementById("sala").value;
+            const data = document.getElementById("data").value;
+            const periodo = document.getElementById("periodo").value;
+
+            if (!usuario || !geracao || !sala || !data || !periodo) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            const reserva = { usuario, geracao, sala, data, periodo };
+
+            try {
+                const response = await fetch("http://localhost:8080/reservas", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(reserva)
+                });
+
+                const responseText = await response.text(); // Captura a mensagem de erro do backend
+
+                if (response.ok) {
+                    alert("Reserva realizada com sucesso!");
+                    document.getElementById("reservaForm").reset();
+                } else {
+                    alert(responseText); // Exibe a mensagem retornada pelo backend
+                }
+            } catch (error) {
+                alert("Erro de conexão com o servidor.");
+            }
+        }
+
+        window.onload = definirDataMinima;
+    </script>
+</head>
+<body>
+    <h2>Reserva de Salas</h2>
+
+    <form id="reservaForm">
+        <div class="form-group">
+            <label for="usuario">Usuário:</label>
+            <input type="text" id="usuario" placeholder="Digite seu nome">
+        </div>
+
+        <div class="form-group">
+            <label for="geracao">Geração:</label>
+            <select id="geracao">
+                <option value="Berith">Berith</option>
+                <option value="Daniel">Daniel</option>
+                <option value="Filhos da Promessa">Filhos da Promessa</option>
+                <option value="Guerreiros de Davi">Guerreiros de Davi</option>
+                <option value="Isaías">Isaías</option>
+                <option value="Josué">Josué</option>
+                <option value="Judá">Judá</option>
+                <option value="Kadosh">Kadosh</option>
+                <option value="Neemias">Neemias</option>
+                <option value="Obede">Obede</option>
+                <option value="Videira">Videira</option>
+                <option value="Zadoque">Zadoque</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="sala">Sala:</label>
+            <select id="sala">
+                <option value="Sala de aula 1">Sala de aula 1</option>
+                <option value="Sala de aula 2">Sala de aula 2</option>
+                <option value="Auditório Restauração">Auditório Restauração</option>
+                <option value="Auditório Start Kids">Auditório Start Kids</option>
+                <option value="Auditório Aliança">Auditório Aliança</option>
+                <option value="Espaço Vida Nova">Espaço Vida Nova</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="data">Data:</label>
+            <input type="date" id="data">
+        </div>
+
+        <div class="form-group">
+            <label for="periodo">Período:</label>
+            <select id="periodo">
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+            </select>
+        </div>
+
+        <div class="buttons">
+            <button type="button" onclick="reservarSala()">Reservar</button>
+            <button type="button" onclick="window.location.href='reservas.html'">Ver Reservas</button>
+        </div>
+    </form>
+</body>
+</html>

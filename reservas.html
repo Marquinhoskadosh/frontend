@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Reservas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .delete-btn {
+            background-color: red;
+        }
+
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+
+        .input-senha {
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        const senhaAdmin = "310356"; // Definir uma senha fixa (ou puxar do backend)
+
+        function formatarData(dataISO) {
+            const [ano, mes, dia] = dataISO.split("-"); // Divide a data "aaaa-mm-dd" em partes
+            return `${dia}-${mes}-${ano}`; // Retorna no formato "dd-mm-aaaa"
+        }
+
+        async function carregarReservas() {
+            try {
+                const response = await fetch("http://localhost:8080/reservas");
+                const reservas = await response.json();
+                const tabela = document.getElementById("tabela-reservas");
+                tabela.innerHTML = ""; // Limpa a tabela antes de adicionar os novos dados
+
+                reservas.forEach(reserva => {
+                    const row = tabela.insertRow();
+                    row.innerHTML = `
+                        <td>${reserva.usuario}</td>
+                        <td>${reserva.geracao}</td>
+                        <td>${reserva.sala}</td>
+                        <td>${formatarData(reserva.data)}</td> <!-- Agora mostra dd-mm-aaaa -->
+                        <td>${reserva.periodo}</td>
+                        <td>
+                            <button onclick="editarReserva(${reserva.id}, '${reserva.geracao}', '${reserva.usuario}', '${reserva.sala}', '${reserva.data}', '${reserva.periodo}')">Editar</button>
+                            <button class="delete-btn" onclick="excluirReserva(${reserva.id})">Excluir</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                alert("Erro ao carregar reservas.");
+            }
+        }
+
+        function validarSenha(callback) {
+            const senha = prompt("Digite a senha para continuar:");
+            if (senha === senhaAdmin) {
+                callback();
+            } else {
+                alert("Senha incorreta! Ação não permitida.");
+            }
+        }
+
+        async function excluirReserva(id) {
+            validarSenha(async () => {
+                if (confirm("Tem certeza que deseja excluir esta reserva?")) {
+                    try {
+                        const response = await fetch(`http://localhost:8080/reservas`, {
+                            method: "DELETE",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id })
+                        });
+
+                        const responseText = await response.text(); // Captura a mensagem de erro do backend
+
+                        if (response.ok) {
+                            alert("Reserva excluída com sucesso!");
+                            carregarReservas();
+                        } else {
+                            alert(responseText); // Exibe a mensagem retornada pelo backend
+                        }
+                    } catch (error) {
+                        alert("Erro de conexão com o servidor.");
+                    }
+                }
+            });
+        }
+
+        function editarReserva(id, usuario, sala, data, periodo) {
+            validarSenha(() => {
+                document.getElementById("edit-id").value = id;
+                document.getElementById("edit-usuario").value = usuario;
+                document.getElementById("edit-geracao").value = geracao;
+                document.getElementById("edit-sala").value = sala;
+                document.getElementById("edit-data").value = data;
+                document.getElementById("edit-periodo").value = periodo;
+                document.getElementById("editModal").style.display = "block";
+            });
+        }
+
+        async function salvarEdicao() {
+            const id = document.getElementById("edit-id").value;
+            const usuario = document.getElementById("edit-usuario").value;
+            const geracao = document.getElementById("edit-geracao").value;
+            const sala = document.getElementById("edit-sala").value;
+            const data = document.getElementById("edit-data").value;
+            const periodo = document.getElementById("edit-periodo").value;
+
+            const reservaEditada = { id, usuario, geracao, sala, data, periodo };
+
+            try {
+                const response = await fetch("http://localhost:8080/reservas", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(reservaEditada)
+                });
+
+                if (response.ok) {
+                    alert("Reserva editada com sucesso!");
+                    document.getElementById("editModal").style.display = "none";
+                    carregarReservas();
+                } else {
+                    alert("Erro ao editar a reserva.");
+                }
+            } catch (error) {
+                alert("Erro de conexão com o servidor.");
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        window.onload = carregarReservas;
+    </script>
+</head>
+
+<body>
+    <h2>Lista de Reservas</h2>
+    <button onclick="window.location.href='index.html'">Voltar</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Usuário</th>
+                <th>Geração</th>
+                <th>Sala</th>
+                <th>Data</th>
+                <th>Período</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabela-reservas"></tbody>
+    </table>
+
+    <!-- Modal de edição -->
+    <div id="editModal"
+        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ddd; box-shadow: 0px 0px 10px #aaa;">
+        <h3>Editar Reserva</h3>
+        <input type="hidden" id="edit-id">
+        <div>
+            <label>Usuário:</label>
+            <input type="text" id="edit-usuario">
+        </div>
+        <div>
+            <label>Sala:</label>
+            <select id="edit-sala">
+                <option value="Sala de aula 1">Sala de aula 1</option>
+                <option value="Sala de aula 2">Sala de aula 2</option>
+                <option value="Auditório Restauração">Auditório Restauração</option>
+                <option value="Auditório Start Kids">Auditório Start Kids</option>
+                <option value="Auditório Aliança">Auditório Aliança</option>
+                <option value="Espaço Vida Nova">Espaço Vida Nova</option>
+            </select>
+        </div>
+        <div>
+            <label>Data:</label>
+            <input type="date" id="edit-data">
+        </div>
+        <div>
+            <label>Período:</label>
+            <select id="edit-periodo">
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
+            </select>
+        </div>
+        <button onclick="salvarEdicao()">Salvar</button>
+        <button onclick="fecharModal()">Cancelar</button>
+    </div>
+</body>
+
+</html>
