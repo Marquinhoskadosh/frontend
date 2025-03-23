@@ -76,45 +76,7 @@
         <tbody id="tabela-reservas"></tbody>
     </table>
 
-    <!-- Modal de edição -->
-    <div id="editModal"
-        style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ddd; box-shadow: 0px 0px 10px #aaa;">
-        <h3>Editar Reserva</h3>
-        <input type="hidden" id="edit-id">
-        <div>
-            <label>Usuário:</label>
-            <input type="text" id="edit-usuario">
-        </div>
-        <div>
-            <label>Geração:</label>
-            <input type="text" id="edit-geracao">
-        </div>        
-        <div>
-            <label>Sala:</label>
-            <select id="edit-sala">
-                <option value="Sala de aula 1">Sala de aula 1</option>
-                <option value="Sala de aula 2">Sala de aula 2</option>
-                <option value="Auditório Restauração">Auditório Restauração</option>
-                <option value="Auditório Start Kids">Auditório Start Kids</option>
-                <option value="Auditório Aliança">Auditório Aliança</option>
-                <option value="Espaço Vida Nova">Espaço Vida Nova</option>
-            </select>
-        </div>
-        <div>
-            <label>Data:</label>
-            <input type="date" id="edit-data">
-        </div>
-        <div>
-            <label>Período:</label>
-            <select id="edit-periodo">
-                <option value="Manhã">Manhã</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noite">Noite</option>
-            </select>
-        </div>
-        <button onclick="salvarEdicao()">Salvar</button>
-        <button onclick="fecharModal()">Cancelar</button>
-    </div>
+
 </body>
 
 <script>
@@ -140,9 +102,7 @@
                     <td>${reserva.sala}</td>
                     <td>${formatarData(reserva.data)}</td> <!-- Agora mostra dd-mm-aaaa -->
                     <td>${reserva.periodo}</td>
-                    <td>
-                        <button onclick="editarReserva(${reserva.id},'${reserva.usuario}', '${reserva.geracao}', '${reserva.sala}', '${reserva.data}', '${reserva.periodo}')">Editar</button>
-                        <button class="delete-btn" onclick="excluirReserva(${reserva.id})">Excluir</button>
+                    <td><button class="delete-btn" onclick="excluirReserva(${reserva.id})">Excluir</button>
                     </td>
                 `;
             });
@@ -184,57 +144,6 @@
             }
         });
     }
-
-    
-    function editarReserva(id, usuario, geracao, sala, data, periodo) {
-        validarSenha(() => {
-            
-                const modal = document.getElementById("editModal");
-                if (!modal) {
-                    alert("Erro: Modal não encontrado!");
-                    return;
-                }
-
-                document.getElementById("edit-id").value = id;
-                document.getElementById("edit-usuario").value = usuario;
-                document.getElementById("edit-geracao").value = geracao;
-                document.getElementById("edit-sala").value = sala;
-                document.getElementById("edit-data").value = data;
-                document.getElementById("edit-periodo").value = periodo;
-                modal.style.display = "block";
-        });
-    }
-
-
-    async function salvarEdicao() {
-        const id = document.getElementById("edit-id").value;
-        const usuario = document.getElementById("edit-usuario").value;
-        const geracao = document.getElementById("edit-geracao").value;
-        const sala = document.getElementById("edit-sala").value;
-        const data = document.getElementById("edit-data").value;
-        const periodo = document.getElementById("edit-periodo").value;
-
-        const reservaEditada = { id, usuario, geracao, sala, data, periodo };
-
-        try {
-            const response = await fetch("https://reserva-salas-production.up.railway.app/reservas", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(reservaEditada)
-            });
-
-            if (response.ok) {
-                alert("Reserva editada com sucesso!");
-                document.getElementById("editModal").style.display = "none";
-                carregarReservas();
-            } else {
-                alert("Erro ao editar a reserva.");
-            }
-        } catch (error) {
-            alert("Erro de conexão com o servidor.");
-        }
-    }
-
 
     function fecharModal() {
         document.getElementById("editModal").style.display = "none";
