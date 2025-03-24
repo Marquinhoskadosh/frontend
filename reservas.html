@@ -11,6 +11,8 @@
             max-width: 600px;
             margin: auto;
             padding: 20px;
+            background-color: #f0f0f0; /* Cor de fundo */
+
         }
 
         table {
@@ -44,7 +46,7 @@
         }
 
         .delete-btn {
-            background-color: red;
+            background-color: rgb(218, 49, 49);
         }
 
         .delete-btn:hover {
@@ -59,8 +61,9 @@
 </head>
 
 <body>
-    <h2>Lista de Reservas</h2>
+    <h2>Lista de Reservas de Salas IBVN</h2>
     <button onclick="window.location.href='index.html'">Voltar</button>
+    <button onclick="imprimirReservas()">Imprimir PDF</button>
 
     <table>
         <thead>
@@ -148,6 +151,11 @@
     function fecharModal() {
         document.getElementById("editModal").style.display = "none";
     }
+
+    function imprimirReservas() {
+        window.print();
+    }   
+
 
     window.onload = carregarReservas;
 </script>
