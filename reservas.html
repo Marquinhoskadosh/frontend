@@ -104,7 +104,7 @@
                     <td>${reserva.usuario}</td>
                     <td>${reserva.geracao}</td>
                     <td>${reserva.sala}</td>
-                    <td style="width: 150px;">${formatarData(reserva.data)}</td>
+                    <td style="min-width: 100px; max-width: 150px; white-space: nowrap;">${formatarData(reserva.data)}</td>
                     <td>${reserva.periodo}</td>
                     <td>${reserva.motivo}</td>
                     <td><button class="delete-btn" onclick="excluirReserva(${reserva.id})">Excluir</button>
