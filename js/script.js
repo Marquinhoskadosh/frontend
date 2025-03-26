@@ -29,12 +29,12 @@ async function carregarReservas() {
     }
 }
 
-function validarSenha(callback) {
+function validarSenhaStart(callback) {
     const senha = prompt("Digite a senha para continuar:");
     if (senha === senhaAdmin) {
         callback();
     } else {
-        alert("Senha incorreta! Ação não permitida.");
+        alert("Não tem a senha? Reserva de espaço com Pastora RAQUEL.");
     }
 }
 
@@ -83,6 +83,21 @@ async function reservarSala() {
 
     const reserva = { usuario, geracao, sala, data, periodo, motivo };
 
+    // Definir as salas que exigem validação de senha
+    const salasRequerSenha = ["Auditório Start Kids"];
+
+    // Se a sala precisar de validação de senha, chamar validarSenha
+    if (salasRequerSenha.includes(sala)) {
+        validarSenhaStart(async () => {
+            await enviarReserva(reserva);
+        });
+    } else {
+        await enviarReserva(reserva);
+    }
+}
+
+// Função separada para enviar a reserva (para evitar repetição de código)
+async function enviarReserva(reserva) {
     try {
         const response = await fetch("https://reserva-salas-production.up.railway.app/reservas", {
             method: "POST",
