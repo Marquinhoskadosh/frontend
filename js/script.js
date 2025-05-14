@@ -7,7 +7,9 @@ function formatarData(dataISO) {
 
 async function carregarReservas() {
     try {
-        const response = await fetch("https://reserva-salas-production.up.railway.app/reservas");
+        //const response = await fetch("https://reserva-salas-production.up.railway.app/reservas");
+        const response = await fetch("https://reserva-salas-sx6r.onrender.com/reservas");
+        
         const reservas = await response.json();
         const tabela = document.getElementById("tabela-reservas");
         tabela.innerHTML = "";
@@ -42,7 +44,8 @@ async function excluirReserva(id) {
     validarSenha(async () => {
         if (confirm("Tem certeza que deseja excluir esta reserva?")) {
             try {
-                const response = await fetch("https://reserva-salas-production.up.railway.app/reservas", {
+                //const response = await fetch("https://reserva-salas-production.up.railway.app/reservas", {
+                const response = await fetch("https://reserva-salas-sx6r.onrender.com/reservas", {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id })
@@ -99,7 +102,8 @@ async function reservarSala() {
 // Função separada para enviar a reserva (para evitar repetição de código)
 async function enviarReserva(reserva) {
     try {
-        const response = await fetch("https://reserva-salas-production.up.railway.app/reservas", {
+        //const response = await fetch("https://reserva-salas-production.up.railway.app/reservas", {
+        const response = await fetch("https://reserva-salas-sx6r.onrender.com/reservas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(reserva)
